@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ugcult/app/app.dart';
 import 'package:ugcult/core/widgets/widgets.dart';
+import 'package:ugcult/features/auth/presentation/providers/auth_provider.dart';
+import 'helpers/fake_auth_repository.dart';
 
 void main() {
   group('Phase 1 Design System Primitives Test Suite', () {
@@ -131,13 +133,17 @@ void main() {
     testWidgets('UgcultApp mounts cleanly with Riverpod ProviderScope',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        const ProviderScope(
-          child: UgcultApp(),
+        ProviderScope(
+          overrides: [
+            authRepositoryProvider.overrideWithValue(FakeAuthRepository()),
+          ],
+          child: const UgcultApp(),
         ),
       );
       await tester.pump();
 
-      expect(find.text('Design System Gallery'), findsOneWidget);
+      expect(find.text('UGCULT'), findsOneWidget);
+      await tester.pumpAndSettle();
     });
   });
 }

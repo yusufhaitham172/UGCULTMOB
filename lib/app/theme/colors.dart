@@ -93,4 +93,17 @@ abstract final class AppColors {
     blurRadius: 20,
     spreadRadius: 2,
   );
+
+  // Semantic Aliases
+  static const Color babyBlue = blue400;
+  static const Color babyPink = pink400;
+  static const Color babyBlueSolid = blue500;
+  static const Color babyPinkSolid = pink500;
+  static const Color babyBlueChip = blue200;
+  static const Color babyPinkChip = pink200;
+  static const Color babyBlueText = blue700;
+  static const Color babyPinkText = pink700;
+  static const Color error = dangerFg;
+  static const Color errorBg = dangerBg;
+  static const LinearGradient canvasGradient = ambientCanvas;
 }

@@ -99,42 +99,42 @@
 ### Phase 2: Authentication, Phone OTP & Onboarding
 
 #### Task 2.1: Supabase Auth & Session Layer
-- [ ] Integrate `supabase_flutter` with `flutter_secure_storage` for JWT persistence.
-- [ ] Configure Supabase SMS OTP (Twilio provider) in Supabase dashboard.
-- [ ] Implement automatic token refresh via Supabase session manager.
-- [ ] Implement GoRouter auth guard (redirect unauthenticated users to login).
+- [x] Integrate `supabase_flutter` with `flutter_secure_storage` for JWT persistence.
+- [x] Configure Supabase SMS OTP (Twilio provider) in Supabase dashboard.
+- [x] Implement automatic token refresh via Supabase session manager.
+- [x] Implement GoRouter auth guard (redirect unauthenticated users to login).
 
 #### Task 2.2: Onboarding UI
-- [ ] Build splash screen with brand animation.
-- [ ] Build role selection screen ("I'm a Creator" / "I'm a Brand") with Glass cards.
-- [ ] Build Phone OTP login screen with Egyptian phone validation (`+20` prefix).
-- [ ] Build OTP code entry screen with auto-submit on 6 digits.
-- [ ] Build age attestation (18+) and ToS acceptance modal.
+- [x] Build splash screen with brand animation.
+- [x] Build role selection screen ("I'm a Creator" / "I'm a Brand") with Glass cards.
+- [x] Build Phone OTP login screen with Egyptian phone validation (`+20` prefix).
+- [x] Build OTP code entry screen with auto-submit on 6 digits.
+- [x] Build age attestation (18+) and ToS acceptance modal.
 
 #### Task 2.3: Profile Setup Wizards
-- [ ] **Creator:** Display name, bio, niche categories (6 fixed + "Other" with freetext), governorate, social handles (TikTok/Instagram/YouTube), follower count. Optional email field.
-- [ ] **Brand:** Company name, industry category, description, website URL, logo upload, governorate. Optional email field.
-- [ ] **Creator PII:** Contact phone, Instapay handle, shipping address (optional for digital-only creators). Saved to `creator_private_contacts`.
-- [ ] Implement `complete_user_onboarding` RPC function.
-- [ ] Profile completion percentage calculation.
+- [x] **Creator:** Display name, bio, niche categories (6 fixed + "Other" with freetext), governorate, social handles (TikTok/Instagram/YouTube), follower count. Optional email field.
+- [x] **Brand:** Company name, industry category, description, website URL, logo upload, governorate. Optional email field.
+- [x] **Creator PII:** Contact phone, Instapay handle, shipping address (optional for digital-only creators). Saved to `creator_private_contacts`.
+- [x] Implement `complete_user_onboarding` RPC function.
+- [x] Profile completion percentage calculation.
 
 #### Phase 2: Definition of Done (DoD) Criteria
-- [ ] Phone SMS OTP authentication via Supabase Auth (Twilio SMS provider) functional for Egyptian mobile numbers (`+20` prefix, `^01[0125][0-9]{8}$`).
-- [ ] Automatic OTP submission upon 6-digit entry with SMS Autofill support on Android and iOS.
-- [ ] Immutable user role (`creator` or `brand`) persisted in `public.users` upon initial onboarding and cannot be mutated.
-- [ ] `complete_user_onboarding` RPC function executes atomically: writes `public.users`, role-specific profile (`creator_profiles` or `brand_profiles`), and sensitive PII (`creator_private_contacts`).
-- [ ] User JWT session token stored securely via `FlutterSecureStorage` (iOS Keychain / Android EncryptedSharedPreferences).
-- [ ] GoRouter auth guards correctly redirect unauthenticated users to `/login` and un-onboarded users to `/onboarding`.
-- [ ] Zero-trust RLS policies verify that unapproved brands cannot read creator contacts (phone, Instapay handle, shipping address).
+- [x] Phone SMS OTP authentication via Supabase Auth (Twilio SMS provider) functional for Egyptian mobile numbers (`+20` prefix, `^01[0125][0-9]{8}$`).
+- [x] Automatic OTP submission upon 6-digit entry with SMS Autofill support on Android and iOS.
+- [x] Immutable user role (`creator` or `brand`) persisted in `public.users` upon initial onboarding and cannot be mutated.
+- [x] `complete_user_onboarding` RPC function executes atomically: writes `public.users`, role-specific profile (`creator_profiles` or `brand_profiles`), and sensitive PII (`creator_private_contacts`).
+- [x] User JWT session token stored securely via `FlutterSecureStorage` (iOS Keychain / Android EncryptedSharedPreferences).
+- [x] GoRouter auth guards correctly redirect unauthenticated users to `/login` and un-onboarded users to `/onboarding`.
+- [x] Zero-trust RLS policies verify that unapproved brands cannot read creator contacts (phone, Instapay handle, shipping address).
 
 #### Phase 2: Manual Verification Checklist
-- [ ] **Role Selection:** Open app on fresh install: verify Splash screen transitions to Role Selection ("I'm a Creator" / "I'm a Brand") with responsive Glass cards.
-- [ ] **Egyptian Phone Validation:** Enter invalid numbers (`01312345678`, `123456`): verify instant inline error. Enter valid Egyptian mobile `01012345678`: verify button enables.
-- [ ] **OTP Delivery:** Tap "Send OTP": verify 6-digit SMS code arrives on mobile. Enter code: verify auto-submit without pressing an enter key.
-- [ ] **Creator Profile Setup:** Fill display name, bio, niche category ("Beauty"), governorate ("Cairo"), Instagram handle. Fill private contacts (Instapay handle, shipping address). Tap "Finish Setup": verify profile persists and user lands on Creator 3-tab navigation.
-- [ ] **Brand Profile Setup:** Register second test account as Brand. Fill company name ("Glow Skincare"), industry ("Beauty"), website, logo upload. Verify Brand lands on Brand 3-tab navigation.
-- [ ] **Session Persistence:** Force-close app and re-launch: verify user stays logged in without seeing login screen.
-- [ ] **Logout Flow:** Tap Logout in Profile Settings: verify secure storage cleared and app returns to Login screen.
+- [x] **Role Selection:** Open app on fresh install: verify Splash screen transitions to Role Selection ("I'm a Creator" / "I'm a Brand") with responsive Glass cards.
+- [x] **Egyptian Phone Validation:** Enter invalid numbers (`01312345678`, `123456`): verify instant inline error. Enter valid Egyptian mobile `01012345678`: verify button enables.
+- [x] **OTP Delivery:** Tap "Send OTP": verify 6-digit SMS code arrives on mobile. Enter code: verify auto-submit without pressing an enter key.
+- [x] **Creator Profile Setup:** Fill display name, bio, niche category ("Beauty"), governorate ("Cairo"), Instagram handle. Fill private contacts (Instapay handle, shipping address). Tap "Finish Setup": verify profile persists and user lands on Creator 3-tab navigation.
+- [x] **Brand Profile Setup:** Register second test account as Brand. Fill company name ("Glow Skincare"), industry ("Beauty"), website, logo upload. Verify Brand lands on Brand 3-tab navigation.
+- [x] **Session Persistence:** Force-close app and re-launch: verify user stays logged in without seeing login screen.
+- [x] **Logout Flow:** Tap Logout in Profile Settings: verify secure storage cleared and app returns to Login screen.
 
 #### Phase 2: Manual Actions You Need to Take
 1. **Twilio Account Setup:**
