@@ -5,9 +5,11 @@
 **Development Host:** Windows 10 / 11 (PowerShell)  
 **CI/CD Compilation:** Automated Cloud macOS Runners (`macos-14`)  
 **Backend:** Supabase Serverless (PostgreSQL 16) + Firebase (FCM / APNs) + Google Drive API v3 (Creator-Owned Storage)  
+**Supabase Project Ref:** `yobkcmhedovixvbqokza` (`https://yobkcmhedovixvbqokza.supabase.co`)  
+**Database Migration Standard:** **Strictly via Supabase MCP** (`apply_migration`, `execute_sql`)  
 **Storage Architecture:** Decoupled Hybrid — Supabase Storage (Avatars, Covers, Portfolios) & Creator-Owned Google Drive (Original High-Bitrate UGC Video Deliverables)  
 **Status:** Approved v3.1 (Creator-Owned Google Drive Media Architecture Revision)  
-**Changes from v3.0:** Introduced decoupled media storage architecture; creator Google Drive integration for campaign video deliverables; in-app brand video playback broker; lossless original download pipeline; Google OAuth 2.0 server-side token security model; zero-trust multi-tenant media authorization; deep comparative playback options analysis.
+**Changes from v3.0:** Introduced decoupled media storage architecture; creator Google Drive integration for campaign video deliverables; in-app brand video playback broker; lossless original download pipeline; Google OAuth 2.0 server-side token security model; zero-trust multi-tenant media authorization; deep comparative playback options analysis; established Supabase MCP as exclusive migration protocol.
 
 ---
 
@@ -532,7 +534,8 @@ We strictly reject making creator files publicly accessible with `"Anyone with t
 [Windows Workstation (Dart / Flutter)]
   ├── Local Hot-Reload & Debugging (Chrome / Windows / Android)
   ├── Static Code Analysis (`flutter analyze`)
-  └── Automated Local Tests (`flutter test`)
+  ├── Automated Local Tests (`flutter test`)
+  └── Supabase Migrations & DDL Deployment (Executed via Supabase MCP to project yobkcmhedovixvbqokza)
         │
         ▼ (Git Push / PR)
 [GitHub Actions Workflow]
@@ -546,6 +549,13 @@ We strictly reject making creator files publicly accessible with `"Anyone with t
         ├── Android: Google Play Console (Internal Testing / Production)
         └── iOS: Apple App Store Connect (TestFlight / App Store)
 ```
+
+### 7.1 Database Migration Protocol via Supabase MCP
+All database lifecycle operations (DDL, schemas, ENUMs, triggers, and RLS policies) are applied directly to Supabase cloud project `yobkcmhedovixvbqokza` using the **Supabase MCP server**:
+1. **Tool Invocation:** Antigravity / AI Agent executes `apply_migration` or `execute_sql` via the Supabase MCP.
+2. **Deterministic Sequence:** Migrations follow `001_create_enums.sql` through `005_create_indexes.sql`.
+3. **Automated Verification:** Verified instantly using MCP tools (`list_tables`, `execute_sql`).
+4. **Zero Out-of-Band DDL:** Developers and AI assistants must never paste unversioned DDL into web dashboards.
 
 ---
 

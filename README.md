@@ -23,7 +23,8 @@ UGCULT Mobile transforms the chaotic, informal creator-brand collaboration in Eg
 - **Host Development OS:** Windows 10 / 11 (PowerShell)
 - **State Management:** Riverpod 2.x with code generation (`flutter_riverpod`, `riverpod_annotation`)
 - **Routing:** `go_router` with declarative route guards and deep linking
-- **Backend:** Supabase (PostgreSQL 16, Supabase Auth, Storage, Edge Functions)
+- **Backend:** Supabase (PostgreSQL 16, Supabase Auth, Storage, Edge Functions; Project: `yobkcmhedovixvbqokza`)
+- **Database Migrations:** Exclusively managed via **Supabase MCP** (`apply_migration`, `execute_sql`)
 - **Push Notifications:** Firebase Cloud Messaging (FCM) & Apple Push Notification service (APNs)
 - **CI/CD Build Pipeline:** GitHub Actions (`macos-14` cloud runners for iOS compilation & packaging; `ubuntu-latest` for Android & automated tests)
 

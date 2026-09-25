@@ -50,41 +50,43 @@
 - [ ] Build reusable UI primitives: `AppButton`, `AppTextInput`, `AppCard`, `AvatarBadge`, `ShimmerLoader`, `StatusPill`.
 - [ ] Use logical layout properties (`start`/`end`) for RTL-readiness throughout.
 
-#### Task 1.3: Supabase Backend Setup
-- [ ] Create Supabase project (cloud).
-- [ ] Write and apply migration 001: all ENUMs from DB-DESIGN.md (including `drive_account_status`, `drive_upload_status`).
-- [ ] Write and apply migration 002: all tables (`users`, `creator_profiles`, `creator_private_contacts`, `creator_portfolios`, `creator_google_drive_accounts`, `brand_profiles`, `campaigns`, `campaign_applications`, `campaign_submissions`, `submission_revision_requests`, `campaign_reviews`, `audit_logs`, `user_fcm_tokens`).
-- [ ] Write and apply migration 003: all triggers (`enforce_campaign_immutability`, `auto_transition_campaign_in_progress`).
-- [ ] Write and apply migration 004: all RLS policies from DB-DESIGN.md (including zero-brand access to Drive accounts & multi-tenant submission isolation).
-- [ ] Write and apply migration 005: all indexes from DB-DESIGN.md (including `idx_drive_accounts_user`, `idx_submissions_drive_file`).
-- [ ] Configure Supabase Vault for OAuth refresh token encryption.
-- [ ] Create Supabase Storage buckets: `portfolios`, `submissions` (photos only), `avatars`, `campaign-covers`.
-- [ ] Configure Storage bucket RLS policies.
-- [ ] Test RLS policies with `supabase test db` (pgTAP) for PII isolation and cross-tenant deliverable boundaries.
+#### Task 1.3: Supabase Backend Setup (Strictly via Supabase MCP)
+- [x] Connected to Supabase Project: `yobkcmhedovixvbqokza` (`https://yobkcmhedovixvbqokza.supabase.co`).
+- [ ] **MANDATORY POLICY:** Apply ALL database migrations exclusively through the **Supabase MCP** (`apply_migration`, `execute_sql`). Never run ad-hoc manual SQL in the web dashboard or bypass MCP.
+- [ ] Apply migration 001 via Supabase MCP: all ENUMs from DB-DESIGN.md (including `drive_account_status`, `drive_upload_status`).
+- [ ] Apply migration 002 via Supabase MCP: all tables (`users`, `creator_profiles`, `creator_private_contacts`, `creator_portfolios`, `creator_google_drive_accounts`, `brand_profiles`, `campaigns`, `campaign_applications`, `campaign_submissions`, `submission_revision_requests`, `campaign_reviews`, `audit_logs`, `user_fcm_tokens`).
+- [ ] Apply migration 003 via Supabase MCP: all triggers (`enforce_campaign_immutability`, `auto_transition_campaign_in_progress`).
+- [ ] Apply migration 004 via Supabase MCP: all RLS policies from DB-DESIGN.md (including zero-brand access to Drive accounts & multi-tenant submission isolation).
+- [ ] Apply migration 005 via Supabase MCP: all indexes from DB-DESIGN.md (including `idx_drive_accounts_user`, `idx_submissions_drive_file`).
+- [ ] Configure Supabase Vault for OAuth refresh token encryption via Supabase MCP / Extensions.
+- [ ] Create Supabase Storage buckets: `portfolios`, `submissions` (photos only), `avatars`, `campaign-covers` via Supabase MCP / Storage SQL.
+- [ ] Configure Storage bucket RLS policies via Supabase MCP.
+- [ ] Verify RLS policies and table structures directly via Supabase MCP (`list_tables`, `execute_sql`).
 
 #### Phase 1: Definition of Done (DoD) Criteria
 - [ ] Flutter app compiles and executes on Windows desktop, Chrome, Android emulator, and iOS simulator without compilation errors or critical warnings.
 - [ ] `flutter analyze` and `dart run custom_lint` exit with 0 errors and 0 warnings.
 - [ ] Sentry Flutter SDK is configured and captures unhandled exceptions with device telemetry.
-- [ ] Supabase migrations (001–005) successfully applied to production/staging Supabase project.
-- [ ] All PostgreSQL 16 ENUMs, 12 tables, triggers (`enforce_campaign_immutability`, `auto_transition_campaign_in_progress`), and RLS policies are active.
+- [ ] Supabase migrations (001–005) successfully applied to project `yobkcmhedovixvbqokza` **exclusively using the Supabase MCP**.
+- [ ] All PostgreSQL 16 ENUMs, 12 tables, triggers (`enforce_campaign_immutability`, `auto_transition_campaign_in_progress`), and RLS policies are active and verified via Supabase MCP `list_tables`.
 - [ ] Supabase Vault is configured with master encryption key for OAuth token custody.
 - [ ] Supabase Storage buckets created with strict RLS policies: `portfolios` (public read, creator insert), `submissions` (photos only), `avatars` (public read), `campaign-covers` (public read).
-- [ ] Automated database test suite (`supabase test db` via pgTAP) passes 100% of tests verifying PII isolation and multi-tenant security boundaries.
+- [ ] Automated database verification queries executed via Supabase MCP confirm 100% of PII isolation and multi-tenant security boundaries.
 
 #### Phase 1: Manual Verification Checklist
 - [ ] **UI Rendering:** Launch app on Android emulator and Chrome: verify `Readex Pro` typography, Baby Blue (`#89CFF0`), Baby Pink (`#F09BBB`), and Ink palette render without default fallback fonts.
 - [ ] **Design System Gallery:** Open design system test screen: verify `GlassContainer` renders 3 visual tiers (A, B, C) with background backdrop blur and subtle borders.
 - [ ] **Primitive Widgets:** Verify `AppButton`, `AppTextInput`, `AppCard`, `AvatarBadge`, `ShimmerLoader`, and `StatusPill` interact cleanly with micro-haptic feedback.
 - [ ] **Sentry Telemetry:** Trigger test crash button: verify exception event appears in Sentry dashboard within 60 seconds with stack trace and device metadata.
-- [ ] **Database Inspection:** Open Supabase Dashboard Table Editor: verify all 12 tables exist with correct relationships, foreign keys, and indexes.
-- [ ] **RLS Verification:** Run pgTAP tests or execute test queries in Supabase SQL editor: verify anonymous and brand users cannot read `creator_private_contacts` or `creator_google_drive_accounts`.
+- [ ] **Database Inspection via Supabase MCP:** Execute `list_tables` and `execute_sql` via Supabase MCP: verify all 12 tables exist with correct relationships, foreign keys, and indexes on project `yobkcmhedovixvbqokza`.
+- [ ] **RLS Verification via Supabase MCP:** Execute test queries via Supabase MCP `execute_sql`: verify anonymous and brand users cannot read `creator_private_contacts` or `creator_google_drive_accounts`.
 
 #### Phase 1: Manual Actions You Need to Take
-1. **Supabase Cloud Project:**
-   - Create a new project on [supabase.com](https://supabase.com) (recommended region: Frankfurt `eu-central-1` for Egypt latency).
-   - In Project Settings → API: copy `Project URL` and `anon public` key to `.env` (`SUPABASE_URL`, `SUPABASE_ANON_KEY`).
-   - In Database → Extensions: search for and enable `vault` (Supabase Vault) and `pgcrypto`.
+1. **Supabase Cloud Project & MCP Authorization:**
+   - Active Project Ref: `yobkcmhedovixvbqokza` ([Dashboard](https://supabase.com/dashboard/project/yobkcmhedovixvbqokza)).
+   - **Authorize Supabase MCP:** Ensure your Supabase MCP connection in Antigravity IDE is authenticated with the organization owning `yobkcmhedovixvbqokza`.
+   - In Project Settings → API: copy `Project URL` (`https://yobkcmhedovixvbqokza.supabase.co`) and `anon public` key to `.env` (`SUPABASE_URL`, `SUPABASE_ANON_KEY`).
+   - In Database → Extensions: enable `vault` (Supabase Vault) and `pgcrypto`.
 2. **Sentry Error Tracking:**
    - Create an account on [sentry.io](https://sentry.io) and create a new project with platform "Flutter".
    - Copy Sentry DSN into `.env` (`SENTRY_DSN`).

@@ -2,8 +2,10 @@
 
 **Document:** Database Schema & RLS Architecture  
 **Database:** PostgreSQL 16 (Supabase Managed)  
+**Supabase Project Ref:** `yobkcmhedovixvbqokza` (`https://yobkcmhedovixvbqokza.supabase.co`)  
+**Migration Execution Standard:** **Strictly via Supabase MCP** (`apply_migration`, `execute_sql`)  
 **Status:** Approved v3.1 (Creator-Owned Google Drive Media Architecture Revision)  
-**Changes from v3.0:** Added `creator_google_drive_accounts` table for encrypted OAuth token custody; updated `campaign_submissions` with Google Drive file metadata fields (file_id, original filename, checksum, dimensions, duration, upload status); added `drive_account_status` and `drive_upload_status` enums; added strict zero-trust RLS policies isolating Google Drive credentials from brands and isolating submission access across tenants.
+**Changes from v3.0:** Added `creator_google_drive_accounts` table for encrypted OAuth token custody; updated `campaign_submissions` with Google Drive file metadata fields (file_id, original filename, checksum, dimensions, duration, upload status); added `drive_account_status` and `drive_upload_status` enums; added strict zero-trust RLS policies isolating Google Drive credentials from brands and isolating submission access across tenants; enforced mandatory migration execution via Supabase MCP.
 
 ---
 
@@ -637,3 +639,35 @@ CREATE INDEX idx_reviews_ratee ON public.campaign_reviews(ratee_id);
 -- FCM token lookups
 CREATE INDEX idx_fcm_user ON public.user_fcm_tokens(user_id);
 ```
+
+---
+
+## 7. Migration Protocol & Supabase MCP Standard
+
+### 7.1 Mandatory Rule
+**All migrations, DDL statements, trigger updates, and security policies for UGCULT must ALWAYS be applied exclusively via the Supabase MCP.**
+
+- **Target Project:** `yobkcmhedovixvbqokza`
+- **Dashboard Reference:** [https://supabase.com/dashboard/project/yobkcmhedovixvbqokza](https://supabase.com/dashboard/project/yobkcmhedovixvbqokza)
+- **Supabase Host:** `https://yobkcmhedovixvbqokza.supabase.co`
+- **MCP Server URL:** `https://mcp.supabase.com/mcp?project_ref=yobkcmhedovixvbqokza`
+
+Under no circumstances should developers or AI agents manually paste DDL into the web dashboard SQL editor or use out-of-band untracked tooling when MCP access is active.
+
+### 7.2 Migration Sequence via Supabase MCP
+Migrations are executed sequentially using the Supabase MCP tools (`apply_migration` / `execute_sql`):
+
+| Migration | Name | Description | Source in Doc |
+|---|---|---|---|
+| **001** | `001_create_enums.sql` | All custom PostgreSQL ENUMs (`user_role`, `campaign_status`, `drive_account_status`, `drive_upload_status`, etc.) | Section 2 |
+| **002** | `002_create_tables.sql` | All 12 domain tables, foreign keys, default constraints, and check constraints | Section 3 |
+| **003** | `003_create_triggers.sql` | Automated state transitions (`auto_transition_campaign_in_progress`) & immutability triggers (`enforce_campaign_immutability`) | Section 4 |
+| **004** | `004_create_rls_policies.sql` | Zero-trust RLS policies isolating PII, Drive credentials, submissions, and double-blind reviews | Section 5 |
+| **005** | `005_create_indexes.sql` | Performance indexes for campaign discovery, application lookups, Drive file references, and reviews | Section 6 |
+
+### 7.3 Verification Protocol
+After applying each migration with Supabase MCP:
+1. Call `list_tables` via Supabase MCP to verify registered tables and columns.
+2. Call `execute_sql` via Supabase MCP to verify RLS enforcement and test queries.
+3. Validate against foreign key dependencies before proceeding to the next migration.
+

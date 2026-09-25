@@ -4,7 +4,8 @@
 **Target Platforms:** iOS (Primary Target) & Android (Flutter Cross-Platform)  
 **Development Host:** Windows 10/11 (PowerShell) with Cloud CI/CD iOS Compilation (`macos-14`)  
 **Target Market:** Egypt (B2C Creator ↔ B2B Brand Discovery & Campaign Operations)  
-**Backend:** Supabase (PostgreSQL 16, Auth, RLS, Edge Functions) + Firebase (FCM / APNs) + Google Drive API v3 (Creator-Owned Video Storage)  
+**Backend:** Supabase (PostgreSQL 16, Auth, RLS, Edge Functions; Project: `yobkcmhedovixvbqokza`) + Firebase (FCM / APNs) + Google Drive API v3 (Creator-Owned Video Storage)  
+**Database Operations:** Managed exclusively via **Supabase MCP** (`apply_migration`, `execute_sql`)  
 **Storage Model:** Decoupled Hybrid — Supabase Storage (Avatars, Campaign Covers, Lightweight Portfolios) & Creator-Owned Google Drive (Original High-Bitrate UGC Video Deliverables)  
 **Language:** English only for MVP. RTL-ready layout infrastructure preserved for Phase 2 Arabic.  
 **Monetization Strategy:** 100% Free for MVP (Liquidity phase); Phase 2 Subscriptions & Posting Fees architected as dormant feature flags.
