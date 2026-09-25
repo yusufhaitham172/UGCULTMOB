@@ -1,30 +1,143 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:ugcult/main.dart';
+import 'package:ugcult/app/app.dart';
+import 'package:ugcult/core/widgets/widgets.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('Phase 1 Design System Primitives Test Suite', () {
+    testWidgets('GlassContainer renders across Tier A, B, and C', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Column(
+              children: const [
+                GlassContainer(
+                  tier: GlassTier.tierA,
+                  child: Text('Tier A Glass'),
+                ),
+                GlassContainer(
+                  tier: GlassTier.tierB,
+                  variant: GlassVariant.tintedBlue,
+                  child: Text('Tier B Glass'),
+                ),
+                GlassContainer(
+                  tier: GlassTier.tierC,
+                  variant: GlassVariant.tintedPink,
+                  child: Text('Tier C Glass'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+      expect(find.text('Tier A Glass'), findsOneWidget);
+      expect(find.text('Tier B Glass'), findsOneWidget);
+      expect(find.text('Tier C Glass'), findsOneWidget);
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    testWidgets('AppButton executes onPressed callback and displays loading state',
+        (WidgetTester tester) async {
+      bool tapped = false;
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: AppButton(
+              label: 'Apply with 1 Tap',
+              role: AppButtonRole.creator,
+              onPressed: () {
+                tapped = true;
+              },
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Apply with 1 Tap'), findsOneWidget);
+      await tester.tap(find.byType(AppButton));
+      await tester.pumpAndSettle();
+      expect(tapped, isTrue);
+
+      // Loading state test
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: AppButton(
+              label: 'Apply with 1 Tap',
+              isLoading: true,
+              onPressed: () {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.text('Apply with 1 Tap'), findsNothing);
+    });
+
+    testWidgets('AppTextInput renders label, hint, and error text', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: AppTextInput(
+              label: 'Phone Number',
+              hintText: '01012345678',
+              errorText: 'Invalid Egyptian number',
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Phone Number'), findsOneWidget);
+      expect(find.text('01012345678'), findsOneWidget);
+      expect(find.text('Invalid Egyptian number'), findsOneWidget);
+    });
+
+    testWidgets('AvatarBadge extracts initials and shows verification icon',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: AvatarBadge(
+              name: 'Salma UGC',
+              role: AvatarRole.creator,
+              isVerified: true,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('SU'), findsOneWidget);
+      expect(find.byIcon(Icons.check), findsOneWidget);
+    });
+
+    testWidgets('StatusPill displays correct label and variant', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: StatusPill(
+              label: 'Approved',
+              variant: PillVariant.success,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Approved'), findsOneWidget);
+    });
+
+    testWidgets('UgcultApp mounts cleanly with Riverpod ProviderScope',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: UgcultApp(),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('Design System Gallery'), findsOneWidget);
+    });
   });
 }
