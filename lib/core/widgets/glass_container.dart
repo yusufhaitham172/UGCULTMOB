@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../app/theme/colors.dart';
 import '../../app/theme/tokens.dart';
+import 'bouncy_scale.dart';
 
 /// Visual Rendering Tier for Liquid Glass
 enum GlassTier {
@@ -37,8 +38,8 @@ enum GlassVariant {
 /// Implements Apple WWDC physical material & depth specifications from DOCS/Design.md Section 3
 class GlassContainer extends StatelessWidget {
   const GlassContainer({
-    super.key,
     required this.child,
+    super.key,
     this.variant = GlassVariant.regular,
     this.tier = GlassTier.tierA,
     this.borderRadius,
@@ -48,6 +49,7 @@ class GlassContainer extends StatelessWidget {
     this.height,
     this.border,
     this.boxShadow,
+    this.blurSigma,
     this.onTap,
   });
 
@@ -61,6 +63,7 @@ class GlassContainer extends StatelessWidget {
   final double? height;
   final BoxBorder? border;
   final List<BoxShadow>? boxShadow;
+  final double? blurSigma;
   final VoidCallback? onTap;
 
   @override
@@ -77,8 +80,8 @@ class GlassContainer extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.white.withValues(alpha: 0.55),
-              Colors.white.withValues(alpha: 0.38),
+              Colors.white.withValues(alpha: 0.60),
+              Colors.white.withValues(alpha: 0.40),
             ],
           ),
         ),
@@ -88,8 +91,8 @@ class GlassContainer extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              AppColors.blue300.withValues(alpha: 0.40),
-              AppColors.blue100.withValues(alpha: 0.25),
+              AppColors.blue300.withValues(alpha: 0.42),
+              AppColors.blue100.withValues(alpha: 0.26),
             ],
           ),
         ),
@@ -99,8 +102,8 @@ class GlassContainer extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              AppColors.pink300.withValues(alpha: 0.40),
-              AppColors.pink100.withValues(alpha: 0.25),
+              AppColors.pink300.withValues(alpha: 0.42),
+              AppColors.pink100.withValues(alpha: 0.26),
             ],
           ),
         ),
@@ -110,21 +113,21 @@ class GlassContainer extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              const Color(0xFFA9D4F7).withValues(alpha: 0.60),
-              const Color(0xFFF8C0D6).withValues(alpha: 0.60),
+              const Color(0xFFA9D4F7).withValues(alpha: 0.65),
+              const Color(0xFFF8C0D6).withValues(alpha: 0.65),
             ],
           ),
         ),
       GlassVariant.thick => BoxDecoration(
           borderRadius: effectiveRadius,
-          color: Colors.white.withValues(alpha: 0.82),
+          color: Colors.white.withValues(alpha: 0.85),
         ),
     };
 
-    // 1px specular highlight rim
+    // 1px directional specular highlight rim
     final effectiveBorder = border ??
         Border.all(
-          color: Colors.white.withValues(alpha: 0.85),
+          color: Colors.white.withValues(alpha: 0.88),
           width: 1.0,
         );
 
@@ -154,16 +157,15 @@ class GlassContainer extends StatelessWidget {
       );
 
       if (onTap != null) {
-        content = GestureDetector(
+        content = BouncyScale(
           onTap: onTap,
-          behavior: HitTestBehavior.opaque,
           child: content,
         );
       }
       return content;
     }
 
-    final double blurSigma = effectiveTier == GlassTier.tierA ? 24.0 : 16.0;
+    final double effectiveBlur = blurSigma ?? (effectiveTier == GlassTier.tierA ? 24.0 : 16.0);
 
     Widget glassCard = Container(
       width: width,
@@ -176,7 +178,7 @@ class GlassContainer extends StatelessWidget {
       child: ClipRRect(
         borderRadius: effectiveRadius,
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
+          filter: ImageFilter.blur(sigmaX: effectiveBlur, sigmaY: effectiveBlur),
           child: Container(
             padding: padding,
             decoration: (backgroundDecoration as BoxDecoration).copyWith(
@@ -189,9 +191,8 @@ class GlassContainer extends StatelessWidget {
     );
 
     if (onTap != null) {
-      glassCard = GestureDetector(
+      glassCard = BouncyScale(
         onTap: onTap,
-        behavior: HitTestBehavior.opaque,
         child: glassCard,
       );
     }

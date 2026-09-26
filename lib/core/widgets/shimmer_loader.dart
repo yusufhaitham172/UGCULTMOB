@@ -4,26 +4,26 @@ import '../../app/theme/colors.dart';
 import '../../app/theme/tokens.dart';
 
 /// ShimmerLoader
-/// Shimmer skeleton primitive for feed cards, media thumbnails, and text lines
+/// High-fidelity dual-tone shimmer skeleton for cards, avatars, and text placeholders.
 class ShimmerLoader extends StatelessWidget {
   const ShimmerLoader({
-    super.key,
     required this.width,
     required this.height,
+    super.key,
     this.borderRadius,
     this.isCircle = false,
   });
 
   const ShimmerLoader.rectangular({
-    super.key,
     required this.width,
     required this.height,
+    super.key,
     this.borderRadius,
   }) : isCircle = false;
 
   const ShimmerLoader.circular({
-    super.key,
     required double size,
+    super.key,
   })  : width = size,
         height = size,
         borderRadius = null,
@@ -37,8 +37,9 @@ class ShimmerLoader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: AppColors.ink100.withValues(alpha: 0.6),
-      highlightColor: AppColors.white.withValues(alpha: 0.9),
+      baseColor: const Color(0xFFE8EDF5),
+      highlightColor: const Color(0xFFF7FAFF),
+      period: const Duration(milliseconds: 1400),
       child: Container(
         width: width,
         height: height,
