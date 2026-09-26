@@ -5,4 +5,5 @@ export 'avatar_badge.dart';
 export 'bouncy_scale.dart';
 export 'glass_container.dart';
 export 'shimmer_loader.dart';
+export 'staggered_slide_fade.dart';
 export 'status_pill.dart';
