@@ -32,8 +32,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       final authState = ref.read(authNotifierProvider);
       final location = state.matchedLocation;
 
-      // Allow design system gallery without interception
-      if (location == '/design-system') {
+      // Allow splash, design system gallery, and onboarding previews without premature interception
+      if (location == '/splash' ||
+          location == '/design-system' ||
+          location.startsWith('/onboarding') ||
+          location.startsWith('/creator') ||
+          location.startsWith('/brand')) {
         return null;
       }
 

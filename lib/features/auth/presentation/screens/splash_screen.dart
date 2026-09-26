@@ -38,7 +38,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       duration: const Duration(milliseconds: 1400),
     );
 
-    _discConvergence = Tween<double>(begin: 36.0, end: 14.0).animate(
+    _discConvergence = Tween<double>(begin: 40.0, end: 14.0).animate(
       CurvedAnimation(
         parent: _controller,
         curve: const Interval(0.0, 0.65, curve: Curves.easeOutBack),
@@ -48,13 +48,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     _lensBloom = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.35, 0.8, curve: Curves.elasticOut),
+        curve: const Interval(0.25, 0.75, curve: Curves.easeOutBack),
       ),
     );
 
     _fadeAnimation = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0.45, 1.0, curve: Curves.easeIn),
+      curve: const Interval(0.25, 0.85, curve: Curves.easeOutCubic),
     );
 
     _slideAnimation = Tween<Offset>(
@@ -63,12 +63,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.45, 1.0, curve: Curves.easeOutCubic),
+        curve: const Interval(0.25, 0.85, curve: Curves.easeOutCubic),
       ),
     );
 
     _controller.addListener(() {
-      if (_controller.value >= 0.45 && !_hapticTriggered) {
+      if (_controller.value >= 0.40 && !_hapticTriggered) {
         _hapticTriggered = true;
         HapticFeedback.lightImpact();
       }
@@ -138,6 +138,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         // Baby Blue Disc (Brand Realm)
                         Positioned(
                           left: offset,
+                          top: 35,
                           child: Container(
                             width: 80,
                             height: 80,
@@ -158,6 +159,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         // Baby Pink Disc (Creator Realm)
                         Positioned(
                           right: offset,
+                          top: 35,
                           child: Container(
                             width: 80,
                             height: 80,
@@ -177,7 +179,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
                         // Optical Match Lens Intersection
                         Transform.scale(
-                          scale: _lensBloom.value,
+                          scale: _lensBloom.value.clamp(0.0, 1.2),
                           child: Container(
                             width: 54,
                             height: 54,
