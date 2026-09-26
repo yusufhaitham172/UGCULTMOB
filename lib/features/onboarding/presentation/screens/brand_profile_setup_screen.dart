@@ -5,8 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:ugcult/app/theme/colors.dart';
 import 'package:ugcult/app/theme/tokens.dart';
 import 'package:ugcult/core/widgets/app_button.dart';
-import 'package:ugcult/core/widgets/app_card.dart';
 import 'package:ugcult/core/widgets/app_text_input.dart';
+import 'package:ugcult/core/widgets/bouncy_scale.dart';
+import 'package:ugcult/core/widgets/glass_container.dart';
 import 'package:ugcult/features/onboarding/presentation/providers/onboarding_provider.dart';
 
 class BrandProfileSetupScreen extends ConsumerStatefulWidget {
@@ -134,6 +135,7 @@ class _BrandProfileSetupScreenState
           child: Form(
             key: _formKey,
             child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.symmetric(
                 horizontal: AppTokens.space5,
                 vertical: AppTokens.space6,
@@ -141,9 +143,17 @@ class _BrandProfileSetupScreenState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.ink900),
-                    onPressed: () => context.go('/onboarding/role-selection'),
+                  BouncyScale(
+                    onTap: () => context.go('/onboarding/role-selection'),
+                    child: Container(
+                      padding: const EdgeInsets.all(AppTokens.space2),
+                      decoration: BoxDecoration(
+                        color: AppColors.white,
+                        borderRadius: AppTokens.radiusSm,
+                        boxShadow: const [AppColors.shadowSm],
+                      ),
+                      child: const Icon(Icons.arrow_back_ios_new, size: 18, color: AppColors.ink900),
+                    ),
                   ),
                   const SizedBox(height: AppTokens.space3),
 
@@ -151,6 +161,7 @@ class _BrandProfileSetupScreenState
                     'Setup Brand Profile',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.w800,
+                          letterSpacing: -0.5,
                           color: AppColors.ink900,
                         ),
                   ),
@@ -164,7 +175,8 @@ class _BrandProfileSetupScreenState
 
                   const SizedBox(height: AppTokens.space6),
 
-                  AppCard(
+                  GlassContainer(
+                    tier: GlassTier.tierA,
                     padding: const EdgeInsets.all(AppTokens.space5),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,6 +185,7 @@ class _BrandProfileSetupScreenState
                           controller: _companyNameController,
                           label: 'Company / Brand Name *',
                           hintText: 'e.g. Glow Cosmetics Egypt',
+                          accentColor: AppColors.babyBlueSolid,
                         ),
                         const SizedBox(height: AppTokens.space4),
 
@@ -190,6 +203,7 @@ class _BrandProfileSetupScreenState
                             color: AppColors.white,
                             borderRadius: AppTokens.radiusMd,
                             border: Border.all(color: AppColors.ink100, width: 1.5),
+                            boxShadow: const [AppColors.shadowSm],
                           ),
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
@@ -198,11 +212,12 @@ class _BrandProfileSetupScreenState
                               items: _industries.map((ind) {
                                 return DropdownMenuItem<String>(
                                   value: ind,
-                                  child: Text(ind, style: const TextStyle(color: AppColors.ink900)),
+                                  child: Text(ind, style: const TextStyle(color: AppColors.ink900, fontWeight: FontWeight.w500)),
                                 );
                               }).toList(),
                               onChanged: (val) {
                                 if (val != null) {
+                                  HapticFeedback.selectionClick();
                                   setState(() => _selectedIndustry = val);
                                 }
                               },
@@ -216,6 +231,7 @@ class _BrandProfileSetupScreenState
                           label: 'Company Description',
                           hintText: 'Organic skincare products formulated specifically for the Egyptian climate.',
                           maxLines: 3,
+                          accentColor: AppColors.babyBlueSolid,
                         ),
                         const SizedBox(height: AppTokens.space4),
 
@@ -223,6 +239,7 @@ class _BrandProfileSetupScreenState
                           controller: _websiteController,
                           label: 'Website URL',
                           hintText: 'https://glowcosmetics.eg',
+                          accentColor: AppColors.babyBlueSolid,
                         ),
                         const SizedBox(height: AppTokens.space4),
 
@@ -240,6 +257,7 @@ class _BrandProfileSetupScreenState
                             color: AppColors.white,
                             borderRadius: AppTokens.radiusMd,
                             border: Border.all(color: AppColors.ink100, width: 1.5),
+                            boxShadow: const [AppColors.shadowSm],
                           ),
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
@@ -248,11 +266,12 @@ class _BrandProfileSetupScreenState
                               items: _governorates.map((gov) {
                                 return DropdownMenuItem<String>(
                                   value: gov,
-                                  child: Text(gov, style: const TextStyle(color: AppColors.ink900)),
+                                  child: Text(gov, style: const TextStyle(color: AppColors.ink900, fontWeight: FontWeight.w500)),
                                 );
                               }).toList(),
                               onChanged: (val) {
                                 if (val != null) {
+                                  HapticFeedback.selectionClick();
                                   setState(() => _selectedGovernorate = val);
                                 }
                               },
@@ -266,6 +285,7 @@ class _BrandProfileSetupScreenState
                           label: 'Official Contact Email (Optional)',
                           hintText: 'contact@brand.eg',
                           keyboardType: TextInputType.emailAddress,
+                          accentColor: AppColors.babyBlueSolid,
                         ),
                       ],
                     ),

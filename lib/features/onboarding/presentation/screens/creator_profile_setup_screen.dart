@@ -5,8 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:ugcult/app/theme/colors.dart';
 import 'package:ugcult/app/theme/tokens.dart';
 import 'package:ugcult/core/widgets/app_button.dart';
-import 'package:ugcult/core/widgets/app_card.dart';
 import 'package:ugcult/core/widgets/app_text_input.dart';
+import 'package:ugcult/core/widgets/bouncy_scale.dart';
+import 'package:ugcult/core/widgets/glass_container.dart';
 import 'package:ugcult/core/widgets/status_pill.dart';
 import 'package:ugcult/features/auth/presentation/providers/auth_provider.dart';
 import 'package:ugcult/features/onboarding/presentation/providers/onboarding_provider.dart';
@@ -189,6 +190,7 @@ class _CreatorProfileSetupScreenState
           child: Form(
             key: _formKey,
             child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.symmetric(
                 horizontal: AppTokens.space5,
                 vertical: AppTokens.space6,
@@ -198,9 +200,17 @@ class _CreatorProfileSetupScreenState
                 children: [
                   Row(
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.ink900),
-                        onPressed: () => context.go('/onboarding/role-selection'),
+                      BouncyScale(
+                        onTap: () => context.go('/onboarding/role-selection'),
+                        child: Container(
+                          padding: const EdgeInsets.all(AppTokens.space2),
+                          decoration: BoxDecoration(
+                            color: AppColors.white,
+                            borderRadius: AppTokens.radiusSm,
+                            boxShadow: const [AppColors.shadowSm],
+                          ),
+                          child: const Icon(Icons.arrow_back_ios_new, size: 18, color: AppColors.ink900),
+                        ),
                       ),
                       const Spacer(),
                       StatusPill(
@@ -217,6 +227,7 @@ class _CreatorProfileSetupScreenState
                     'Create Creator Profile',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.w800,
+                          letterSpacing: -0.5,
                           color: AppColors.ink900,
                         ),
                   ),
@@ -231,7 +242,8 @@ class _CreatorProfileSetupScreenState
                   const SizedBox(height: AppTokens.space6),
 
                   // Public Profile Section
-                  AppCard(
+                  GlassContainer(
+                    tier: GlassTier.tierA,
                     padding: const EdgeInsets.all(AppTokens.space5),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,6 +261,7 @@ class _CreatorProfileSetupScreenState
                           controller: _displayNameController,
                           label: 'Creator / Display Name *',
                           hintText: 'e.g. Salma Ahmed',
+                          accentColor: AppColors.babyPinkSolid,
                           onChanged: (_) => setState(() {}),
                         ),
                         const SizedBox(height: AppTokens.space4),
@@ -258,6 +271,7 @@ class _CreatorProfileSetupScreenState
                           label: 'Short Bio',
                           hintText: 'UGC creator passionate about authentic skincare & lifestyle routines.',
                           maxLines: 3,
+                          accentColor: AppColors.babyPinkSolid,
                           onChanged: (_) => setState(() {}),
                         ),
                         const SizedBox(height: AppTokens.space4),
@@ -276,6 +290,7 @@ class _CreatorProfileSetupScreenState
                             color: AppColors.white,
                             borderRadius: AppTokens.radiusMd,
                             border: Border.all(color: AppColors.ink100, width: 1.5),
+                            boxShadow: const [AppColors.shadowSm],
                           ),
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
@@ -284,11 +299,12 @@ class _CreatorProfileSetupScreenState
                               items: _governorates.map((gov) {
                                 return DropdownMenuItem<String>(
                                   value: gov,
-                                  child: Text(gov, style: const TextStyle(color: AppColors.ink900)),
+                                  child: Text(gov, style: const TextStyle(color: AppColors.ink900, fontWeight: FontWeight.w500)),
                                 );
                               }).toList(),
                               onChanged: (val) {
                                 if (val != null) {
+                                  HapticFeedback.selectionClick();
                                   setState(() => _selectedGovernorate = val);
                                 }
                               },
@@ -311,36 +327,95 @@ class _CreatorProfileSetupScreenState
                           children: [
                             ..._fixedNiches.map((niche) {
                               final isSelected = _selectedNiches.contains(niche);
-                              return FilterChip(
-                                label: Text(niche),
-                                selected: isSelected,
-                                selectedColor: AppColors.babyPinkChip,
-                                checkmarkColor: AppColors.babyPinkSolid,
-                                labelStyle: TextStyle(
-                                  color: isSelected
-                                      ? AppColors.babyPinkText
-                                      : AppColors.ink700,
-                                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                                ),
-                                onSelected: (selected) {
+                              return BouncyScale(
+                                onTap: () {
+                                  HapticFeedback.selectionClick();
                                   setState(() {
-                                    if (selected) {
-                                      _selectedNiches.add(niche);
-                                    } else {
+                                    if (isSelected) {
                                       _selectedNiches.remove(niche);
+                                    } else {
+                                      _selectedNiches.add(niche);
                                     }
                                   });
                                 },
+                                child: AnimatedContainer(
+                                  duration: AppTokens.durationFast,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: AppTokens.space3,
+                                    vertical: AppTokens.space2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? AppColors.babyPinkChip
+                                        : AppColors.white,
+                                    borderRadius: AppTokens.radiusFull,
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? AppColors.babyPinkSolid
+                                          : AppColors.ink100,
+                                      width: isSelected ? 1.5 : 1.0,
+                                    ),
+                                    boxShadow: const [AppColors.shadowSm],
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      if (isSelected) ...[
+                                        const Icon(
+                                          Icons.check_rounded,
+                                          size: 16,
+                                          color: AppColors.babyPinkSolid,
+                                        ),
+                                        const SizedBox(width: AppTokens.space1),
+                                      ],
+                                      Text(
+                                        niche,
+                                        style: TextStyle(
+                                          color: isSelected
+                                              ? AppColors.babyPinkText
+                                              : AppColors.ink700,
+                                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               );
                             }),
-                            FilterChip(
-                              label: const Text('Other'),
-                              selected: _isOtherNicheSelected,
-                              selectedColor: AppColors.babyPinkChip,
-                              checkmarkColor: AppColors.babyPinkSolid,
-                              onSelected: (selected) {
-                                setState(() => _isOtherNicheSelected = selected);
+                            BouncyScale(
+                              onTap: () {
+                                HapticFeedback.selectionClick();
+                                setState(() => _isOtherNicheSelected = !_isOtherNicheSelected);
                               },
+                              child: AnimatedContainer(
+                                duration: AppTokens.durationFast,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: AppTokens.space3,
+                                  vertical: AppTokens.space2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: _isOtherNicheSelected
+                                      ? AppColors.babyPinkChip
+                                      : AppColors.white,
+                                  borderRadius: AppTokens.radiusFull,
+                                  border: Border.all(
+                                    color: _isOtherNicheSelected
+                                        ? AppColors.babyPinkSolid
+                                        : AppColors.ink100,
+                                    width: _isOtherNicheSelected ? 1.5 : 1.0,
+                                  ),
+                                  boxShadow: const [AppColors.shadowSm],
+                                ),
+                                child: Text(
+                                  'Other',
+                                  style: TextStyle(
+                                    color: _isOtherNicheSelected
+                                        ? AppColors.babyPinkText
+                                        : AppColors.ink700,
+                                    fontWeight: _isOtherNicheSelected ? FontWeight.w700 : FontWeight.w500,
+                                  ),
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -351,6 +426,7 @@ class _CreatorProfileSetupScreenState
                             controller: _customNicheController,
                             label: 'Custom Niche Name',
                             hintText: 'e.g. Travel & Hotels',
+                            accentColor: AppColors.babyPinkSolid,
                           ),
                         ],
                       ],
@@ -360,7 +436,8 @@ class _CreatorProfileSetupScreenState
                   const SizedBox(height: AppTokens.space5),
 
                   // Social Media Section
-                  AppCard(
+                  GlassContainer(
+                    tier: GlassTier.tierA,
                     padding: const EdgeInsets.all(AppTokens.space5),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -377,6 +454,7 @@ class _CreatorProfileSetupScreenState
                           controller: _tiktokController,
                           label: 'TikTok Handle',
                           hintText: '@creator_name',
+                          accentColor: AppColors.babyPinkSolid,
                           onChanged: (_) => setState(() {}),
                         ),
                         const SizedBox(height: AppTokens.space4),
@@ -384,6 +462,7 @@ class _CreatorProfileSetupScreenState
                           controller: _instagramController,
                           label: 'Instagram Handle',
                           hintText: '@creator_name',
+                          accentColor: AppColors.babyPinkSolid,
                           onChanged: (_) => setState(() {}),
                         ),
                         const SizedBox(height: AppTokens.space4),
@@ -391,6 +470,7 @@ class _CreatorProfileSetupScreenState
                           controller: _youtubeController,
                           label: 'YouTube Handle / Channel',
                           hintText: '@creator_channel',
+                          accentColor: AppColors.babyPinkSolid,
                           onChanged: (_) => setState(() {}),
                         ),
                       ],
@@ -400,7 +480,8 @@ class _CreatorProfileSetupScreenState
                   const SizedBox(height: AppTokens.space5),
 
                   // Zero-Trust Private Contacts (PII)
-                  AppCard(
+                  GlassContainer(
+                    tier: GlassTier.tierA,
                     padding: const EdgeInsets.all(AppTokens.space5),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -432,6 +513,7 @@ class _CreatorProfileSetupScreenState
                           controller: _contactPhoneController,
                           label: 'Contact Mobile Number *',
                           hintText: '+201012345678',
+                          accentColor: AppColors.babyPinkSolid,
                         ),
                         const SizedBox(height: AppTokens.space4),
 
@@ -439,6 +521,7 @@ class _CreatorProfileSetupScreenState
                           controller: _instapayController,
                           label: 'Instapay Handle (for off-platform payment)',
                           hintText: 'username@instapay',
+                          accentColor: AppColors.babyPinkSolid,
                           onChanged: (_) => setState(() {}),
                         ),
                         const SizedBox(height: AppTokens.space4),
@@ -447,6 +530,7 @@ class _CreatorProfileSetupScreenState
                           controller: _shippingCityController,
                           label: 'Shipping City',
                           hintText: 'e.g. Nasr City, New Cairo, Maadi',
+                          accentColor: AppColors.babyPinkSolid,
                           onChanged: (_) => setState(() {}),
                         ),
                         const SizedBox(height: AppTokens.space4),
@@ -455,6 +539,7 @@ class _CreatorProfileSetupScreenState
                           controller: _shippingAddressController,
                           label: 'Street Address',
                           hintText: 'e.g. 15 Abbas El Akkad Street',
+                          accentColor: AppColors.babyPinkSolid,
                           onChanged: (_) => setState(() {}),
                         ),
                         const SizedBox(height: AppTokens.space4),
@@ -463,6 +548,7 @@ class _CreatorProfileSetupScreenState
                           controller: _shippingBuildingController,
                           label: 'Building & Apartment Details',
                           hintText: 'Building 12, Floor 3, Apt 6',
+                          accentColor: AppColors.babyPinkSolid,
                         ),
                       ],
                     ),

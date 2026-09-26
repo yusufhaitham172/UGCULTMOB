@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ugcult/app/theme/colors.dart';
 import 'package:ugcult/app/theme/tokens.dart';
 import 'package:ugcult/core/widgets/app_button.dart';
+import 'package:ugcult/core/widgets/bouncy_scale.dart';
 import 'package:ugcult/core/widgets/glass_container.dart';
 import 'package:ugcult/features/auth/domain/entities/user_entity.dart';
 import 'package:ugcult/features/onboarding/presentation/providers/onboarding_provider.dart';
@@ -38,6 +39,7 @@ class RoleSelectionScreen extends ConsumerWidget {
                   'Choose Your Journey',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.w800,
+                        letterSpacing: -0.5,
                         color: AppColors.ink900,
                       ),
                 ),
@@ -59,6 +61,7 @@ class RoleSelectionScreen extends ConsumerWidget {
                       'Showcase your video portfolio, apply to brand campaigns with 1 tap, and get paid for your authentic content.',
                   icon: Icons.videocam_rounded,
                   accentColor: AppColors.babyPinkSolid,
+                  glowColor: const Color(0x38F09BBB),
                   borderColor: state.selectedRole == UserRole.creator
                       ? AppColors.babyPinkSolid
                       : AppColors.ink100,
@@ -78,6 +81,7 @@ class RoleSelectionScreen extends ConsumerWidget {
                       'Publish campaigns without approval delays, review creator applicants, and scale your brand with Egyptian creators.',
                   icon: Icons.business_rounded,
                   accentColor: AppColors.babyBlueSolid,
+                  glowColor: const Color(0x3889CFF0),
                   borderColor: state.selectedRole == UserRole.brand
                       ? AppColors.babyBlueSolid
                       : AppColors.ink100,
@@ -126,6 +130,7 @@ class _RoleCard extends StatelessWidget {
   final String subtitle;
   final IconData icon;
   final Color accentColor;
+  final Color glowColor;
   final Color borderColor;
   final bool isSelected;
   final VoidCallback onTap;
@@ -135,6 +140,7 @@ class _RoleCard extends StatelessWidget {
     required this.subtitle,
     required this.icon,
     required this.accentColor,
+    required this.glowColor,
     required this.borderColor,
     required this.isSelected,
     required this.onTap,
@@ -142,13 +148,27 @@ class _RoleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return BouncyScale(
       onTap: onTap,
+      scaleDownFactor: 0.98,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
+        duration: AppTokens.durationFast,
+        curve: Curves.easeOutCubic,
+        decoration: BoxDecoration(
+          borderRadius: AppTokens.radiusLg,
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: glowColor,
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ]
+              : const [AppColors.shadowSm],
+        ),
         child: GlassContainer(
           tier: isSelected ? GlassTier.tierA : GlassTier.tierB,
+          borderRadius: AppTokens.radiusLg,
           padding: const EdgeInsets.all(AppTokens.space5),
           border: Border.all(
             color: borderColor,
@@ -157,19 +177,20 @@ class _RoleCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 48,
-                height: 48,
+              AnimatedContainer(
+                duration: AppTokens.durationFast,
+                width: 52,
+                height: 52,
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? accentColor.withValues(alpha: 0.16)
+                      ? accentColor.withValues(alpha: 0.18)
                       : AppColors.ink100.withValues(alpha: 0.5),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   icon,
                   color: isSelected ? accentColor : AppColors.ink500,
-                  size: 26,
+                  size: 28,
                 ),
               ),
               const SizedBox(width: AppTokens.space4),
@@ -187,12 +208,28 @@ class _RoleCard extends StatelessWidget {
                               ),
                         ),
                         const Spacer(),
-                        if (isSelected)
-                          Icon(
-                            Icons.check_circle_rounded,
-                            color: accentColor,
-                            size: 22,
-                          ),
+                        AnimatedScale(
+                          scale: isSelected ? 1.0 : 0.8,
+                          duration: AppTokens.durationFast,
+                          curve: Curves.easeOutBack,
+                          child: isSelected
+                              ? Icon(
+                                  Icons.check_circle_rounded,
+                                  color: accentColor,
+                                  size: 22,
+                                )
+                              : Container(
+                                  width: 20,
+                                  height: 20,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: AppColors.ink300,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: AppTokens.space2),
