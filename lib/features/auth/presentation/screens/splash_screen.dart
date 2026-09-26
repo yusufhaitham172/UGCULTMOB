@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,6 +27,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   late final Animation<double> _fadeAnimation;
   late final Animation<Offset> _slideAnimation;
   bool _hapticTriggered = false;
+
+  Timer? _navTimer;
 
   @override
   void initState() {
@@ -76,32 +79,35 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     // Trigger auth check and transition after brief splash presentation
     if (widget.autoNavigate) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _navigateAfterDelay();
+        _startNavTimer();
       });
     }
   }
 
-  Future<void> _navigateAfterDelay() async {
-    await Future.delayed(const Duration(milliseconds: 1600));
-    if (!mounted) return;
+  void _startNavTimer() {
+    _navTimer?.cancel();
+    _navTimer = Timer(const Duration(milliseconds: 1600), () {
+      if (!mounted) return;
 
-    final authState = ref.read(authNotifierProvider);
+      final authState = ref.read(authNotifierProvider);
 
-    if (authState.isAuthenticated) {
-      if (authState.isCreator) {
-        context.go('/creator/home');
+      if (authState.isAuthenticated) {
+        if (authState.isCreator) {
+          context.go('/creator/home');
+        } else {
+          context.go('/brand/home');
+        }
+      } else if (authState.isPendingOnboarding) {
+        context.go('/onboarding/role-selection');
       } else {
-        context.go('/brand/home');
+        context.go('/login');
       }
-    } else if (authState.isPendingOnboarding) {
-      context.go('/onboarding/role-selection');
-    } else {
-      context.go('/login');
-    }
+    });
   }
 
   @override
   void dispose() {
+    _navTimer?.cancel();
     _controller.dispose();
     super.dispose();
   }

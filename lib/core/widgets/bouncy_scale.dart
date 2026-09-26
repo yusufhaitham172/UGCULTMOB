@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ugcult/app/theme/tokens.dart';
 
 /// Universal Apple-grade interactive pressable with fluid spring scaling
 /// and instant haptic feedback adhering to WWDC tactile design principles.
