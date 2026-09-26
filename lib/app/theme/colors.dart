@@ -106,4 +106,5 @@ abstract final class AppColors {
   static const Color error = dangerFg;
   static const Color errorBg = dangerBg;
   static const LinearGradient canvasGradient = ambientCanvas;
+  static const LinearGradient matchGradient = matchBlend;
 }

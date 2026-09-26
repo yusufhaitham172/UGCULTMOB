@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../../app/theme/colors.dart';
 import '../../app/theme/tokens.dart';
 import '../../app/theme/typography.dart';
+import 'bouncy_scale.dart';
 import 'glass_container.dart';
 
 enum AppButtonVariant {
@@ -29,11 +29,11 @@ enum AppButtonRole {
 }
 
 /// Production AppButton with micro-haptics & fluid states
-class AppButton extends StatefulWidget {
+class AppButton extends StatelessWidget {
   const AppButton({
-    super.key,
     required this.label,
     required this.onPressed,
+    super.key,
     this.variant = AppButtonVariant.primary,
     this.role = AppButtonRole.neutral,
     this.icon,
@@ -52,119 +52,144 @@ class AppButton extends StatefulWidget {
   final double height;
 
   @override
-  State<AppButton> createState() => _AppButtonState();
-}
-
-class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _scaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: AppTokens.durationFast,
-    );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.97).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _onTapDown(TapDownDetails _) {
-    if (widget.onPressed != null && !widget.isLoading) {
-      _controller.forward();
-      HapticFeedback.lightImpact();
-    }
-  }
-
-  void _onTapUp(TapUpDetails _) {
-    if (widget.onPressed != null && !widget.isLoading) {
-      _controller.reverse();
-    }
-  }
-
-  void _onTapCancel() {
-    _controller.reverse();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final bool isDisabled = widget.onPressed == null || widget.isLoading;
+    final bool isDisabled = onPressed == null || isLoading;
 
-    Color backgroundColor;
-    Color foregroundColor;
-    Gradient? gradient;
-    BoxBorder? border;
-    List<BoxShadow>? shadow;
+    final (Color bgSolid, Color fgColor, Gradient? gradient, BoxBorder? border, List<BoxShadow>? shadow) =
+        switch (variant) {
+      AppButtonVariant.primary => switch (role) {
+          AppButtonRole.creator => (
+              AppColors.babyPinkSolid,
+              AppColors.white,
+              null,
+              null,
+              isDisabled
+                  ? null
+                  : const [
+                      BoxShadow(
+                        color: Color(0x38F09BBB),
+                        blurRadius: 16,
+                        offset: Offset(0, 6),
+                      ),
+                    ],
+            ),
+          AppButtonRole.brand => (
+              AppColors.babyBlueSolid,
+              AppColors.white,
+              null,
+              null,
+              isDisabled
+                  ? null
+                  : const [
+                      BoxShadow(
+                        color: Color(0x3889CFF0),
+                        blurRadius: 16,
+                        offset: Offset(0, 6),
+                      ),
+                    ],
+            ),
+          AppButtonRole.neutral => (
+              AppColors.ink900,
+              AppColors.white,
+              null,
+              null,
+              isDisabled
+                  ? null
+                  : const [
+                      BoxShadow(
+                        color: Color(0x280B1220),
+                        blurRadius: 16,
+                        offset: Offset(0, 6),
+                      ),
+                    ],
+            ),
+        },
+      AppButtonVariant.matchBlend => (
+          Colors.transparent,
+          AppColors.ink900,
+          AppColors.matchGradient,
+          Border.all(color: Colors.white.withValues(alpha: 0.8), width: 1.0),
+          isDisabled
+              ? null
+              : const [
+                  BoxShadow(
+                    color: Color(0x40A9D4F7),
+                    blurRadius: 20,
+                    offset: Offset(-2, 6),
+                  ),
+                  BoxShadow(
+                    color: Color(0x40F8C0D6),
+                    blurRadius: 20,
+                    offset: Offset(2, 6),
+                  ),
+                ],
+        ),
+      AppButtonVariant.secondary => (
+          AppColors.white,
+          AppColors.ink900,
+          null,
+          Border.all(color: AppColors.ink100, width: 1.0),
+          const [AppColors.shadowSm],
+        ),
+      AppButtonVariant.destructive => (
+          AppColors.dangerBg,
+          AppColors.dangerFg,
+          null,
+          Border.all(color: AppColors.dangerFg.withValues(alpha: 0.2), width: 1.0),
+          null,
+        ),
+      AppButtonVariant.ghost => (
+          Colors.transparent,
+          AppColors.ink700,
+          null,
+          null,
+          null,
+        ),
+    };
 
-    if (isDisabled) {
-      backgroundColor = AppColors.ink100;
-      foregroundColor = AppColors.ink300;
-    } else {
-      switch (widget.variant) {
-        case AppButtonVariant.primary:
-          backgroundColor = switch (widget.role) {
-            AppButtonRole.brand => AppColors.blue500,
-            AppButtonRole.creator => AppColors.pink500,
-            AppButtonRole.neutral => AppColors.ink900,
-          };
-          foregroundColor = AppColors.white;
-          shadow = switch (widget.role) {
-            AppButtonRole.brand => const [AppColors.glowBlue],
-            AppButtonRole.creator => const [AppColors.glowPink],
-            AppButtonRole.neutral => const [AppColors.shadowSm],
-          };
-        case AppButtonVariant.matchBlend:
-          gradient = AppColors.matchBlend;
-          backgroundColor = Colors.transparent;
-          foregroundColor = AppColors.ink900;
-          shadow = const [AppColors.shadowMd];
-        case AppButtonVariant.secondary:
-          backgroundColor = Colors.white.withValues(alpha: 0.60);
-          foregroundColor = AppColors.ink900;
-          border = Border.all(color: Colors.white.withValues(alpha: 0.80), width: 1);
-          shadow = const [AppColors.shadowSm];
-        case AppButtonVariant.destructive:
-          backgroundColor = AppColors.dangerBg;
-          foregroundColor = AppColors.dangerFg;
-          border = Border.all(color: AppColors.dangerFg.withValues(alpha: 0.3), width: 1);
-        case AppButtonVariant.ghost:
-          backgroundColor = Colors.transparent;
-          foregroundColor = AppColors.ink700;
-      }
-    }
+    final effectiveBg = isDisabled && variant != AppButtonVariant.ghost
+        ? AppColors.ink100
+        : bgSolid;
 
-    Widget content = SizedBox(
-      height: widget.height,
+    final effectiveFg = isDisabled ? AppColors.ink300 : fgColor;
+
+    Widget buttonContent = Container(
+      height: height,
+      width: isFullWidth ? double.infinity : null,
+      padding: EdgeInsets.symmetric(
+        horizontal: isFullWidth ? AppTokens.space4 : AppTokens.space6,
+      ),
+      decoration: BoxDecoration(
+        color: gradient == null ? effectiveBg : null,
+        gradient: isDisabled ? null : gradient,
+        borderRadius: AppTokens.radiusMd,
+        border: border,
+        boxShadow: shadow,
+      ),
       child: Center(
-        child: widget.isLoading
+        child: isLoading
             ? SizedBox(
                 width: 22,
                 height: 22,
                 child: CircularProgressIndicator(
                   strokeWidth: 2.2,
-                  valueColor: AlwaysStoppedAnimation<Color>(foregroundColor),
+                  valueColor: AlwaysStoppedAnimation<Color>(effectiveFg),
                 ),
               )
             : Row(
-                mainAxisSize: widget.isFullWidth ? MainAxisSize.max : MainAxisSize.min,
+                mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (widget.icon != null) ...[
-                    widget.icon!,
+                  if (icon != null) ...[
+                    icon!,
                     const SizedBox(width: AppTokens.space2),
                   ],
                   Text(
-                    widget.label,
+                    label,
                     style: AppTypography.headline.copyWith(
-                      color: foregroundColor,
+                      color: effectiveFg,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.2,
                     ),
                   ),
                 ],
@@ -172,35 +197,21 @@ class _AppButtonState extends State<AppButton> with SingleTickerProviderStateMix
       ),
     );
 
-    if (widget.variant == AppButtonVariant.secondary && !isDisabled) {
-      content = GlassContainer(
-        borderRadius: AppTokens.radiusFull,
-        height: widget.height,
-        variant: GlassVariant.regular,
-        child: Center(child: content),
-      );
-    } else {
-      content = Container(
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          gradient: gradient,
-          borderRadius: AppTokens.radiusFull,
-          border: border,
-          boxShadow: shadow,
-        ),
-        child: content,
+    if (variant == AppButtonVariant.secondary && !isDisabled) {
+      buttonContent = GlassContainer(
+        borderRadius: AppTokens.radiusMd,
+        padding: EdgeInsets.zero,
+        child: buttonContent,
       );
     }
 
-    return ScaleTransition(
-      scale: _scaleAnimation,
-      child: GestureDetector(
-        onTapDown: isDisabled ? null : _onTapDown,
-        onTapUp: isDisabled ? null : _onTapUp,
-        onTapCancel: isDisabled ? null : _onTapCancel,
-        onTap: isDisabled ? null : widget.onPressed,
-        child: widget.isFullWidth ? content : IntrinsicWidth(child: content),
-      ),
+    if (isDisabled) {
+      return buttonContent;
+    }
+
+    return BouncyScale(
+      onTap: onPressed,
+      child: buttonContent,
     );
   }
 }
